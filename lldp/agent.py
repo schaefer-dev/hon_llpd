@@ -37,8 +37,9 @@ class LLDPAgent:
         """
         if sock is None:
             # Open a socket suitable for transmitting LLDP frames.
-            self.socket = None  # TODO: Implement
-            raise NotImplementedError
+            # TODO: Implement
+            self.socket = socket.socket(17, socket.SOCK_RAW, socket.htons(0x0003))
+            self.socket.bind((interface_name, 0x0003))
         else:
             self.socket = sock
 
