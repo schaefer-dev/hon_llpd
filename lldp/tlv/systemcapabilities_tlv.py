@@ -94,9 +94,9 @@ class SystemCapabilitiesTLV(TLV):
         # check if anything is enabled that is not supported
         i = 1
         while i <= 1024:
-            if self.value & i > 0:
-                if (self.value >> 16) & i == 0:
-                    raise ValueError()
+            if (self.value & i) != 0:
+                if ((self.value >> 16) & i) == 0:
+                    raise ValueError(self.value)
             i *= 2
 
     def __bytes__(self):
@@ -146,18 +146,22 @@ class SystemCapabilitiesTLV(TLV):
         if length != 4:
             raise ValueError()
 
-        values = data[2:]
+        values = 0
 
-        # check if anything is enabled that is not supported
+
+        supported = (data[2] << 8) + (data[3])
+        enabled = (data[4] << 8) + data[5]
+
+        # TODO: check if anything is enabled that is not supported
         i = 1
         while i <= 1024:
-            if values & i > 0:
-                if (values >> 16) & i == 0:
-                    raise ValueError()
+            if (enabled & i) > 0:
+                if (supported) & i == 0:
+                    raise ValueError(values)
             i *= 2
 
 
-        return SystemCapabilitiesTLV(values)
+        return SystemCapabilitiesTLV(supported, enabled)
 
     def supports(self, capabilities: int):
         """Check if the system supports a given set of capabilities.
