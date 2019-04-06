@@ -107,7 +107,10 @@ class ManagementAddressTLV(TLV):
         self.subtype = ifsubtype
         if ifsubtype > 3:
             raise ValueError()
-        self.value = address
+        if isinstance(address, str):
+            self.value = ip_address(address)
+        else:
+            self.value = address
         self.oid = oid
         self.ifnumber  = interface_number
 
@@ -118,20 +121,25 @@ class ManagementAddressTLV(TLV):
         See `TLV.__bytes__()` for more information.
         """
         # TODO: Implement
+
+        oid_length = 0
+        if self.oid is not None:
+            oid_length = len(self.oid)
+
         if self.value.version == 4:
             if self.oid is None:
-                return bytes([self.type * 2, 8 + 4, 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(1, 'big') + self.oid
+                return bytes([self.type * 2, 8 + 4, 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big')
 
             else:
-                return bytes([self.type * 2, 8 + 4 + len(self.oid), 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(1, 'big') + self.oid
+                return bytes([self.type * 2, 8 + 4 + oid_length, 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big') + self.oid
         else:
             if self.oid is None:
                 return bytes(
                     [self.type * 2, 8 + 16 + len(self.oid), 16, 2]) + self.value.packed + self.subtype.to_bytes(1,
                                                                                                                 'big') + self.ifnumber.to_bytes(
-                    4, 'big') + len(self.oid).to_bytes(1, 'big') + self.oid
+                    4, 'big') + oid_length.to_bytes(1, 'big')
             else:
-                return bytes([self.type * 2, 8 + 16 + len(self.oid), 16, 2]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(1, 'big') + self.oid
+                return bytes([self.type * 2, 8 + 16 + oid_length, 16, 2]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big') + self.oid
 
     def __len__(self):
         """Return the length of the TLV value.
