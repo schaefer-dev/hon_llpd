@@ -60,14 +60,12 @@ class TLV(object):
             data (bytes or bytearray): The packed TLV
         """
 
-        # Extract the type value from `data`
-        typevalue = None    # TODO: Implement
-
-        # Return the proper type enum or raise an error
+        type_byte = int.from_bytes(data[0] >> 1, "big")
+        #type_byte = 0
         try:
-            return TLV.Type(typevalue)
+            return TLV.Type(type_byte)
         except ValueError:
-            raise ValueError(f"No such TLV Type: {typevalue}")
+            raise ValueError(f"No such TLV Type: {type_byte}")
 
     @staticmethod
     def get_length(data: ByteType) -> int:
@@ -78,7 +76,7 @@ class TLV(object):
         Params:
             data (bytes or bytearray): The packed TLV
         """
-        # TODO: Implement
+        type_byte = data[0] >> 1
         return NotImplemented
 
     @staticmethod

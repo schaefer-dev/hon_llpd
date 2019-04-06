@@ -27,9 +27,11 @@ class TTLTLV(TLV):
     """
 
     def __init__(self, ttl: int):
-        # TODO: Implement
-        self.type = NotImplemented
-        self.value = NotImplemented
+        # TODO: Implement DONE
+        if ttl > 65535 or ttl <= 0:
+            raise ValueError()
+        self.type = TLV.Type.TTL
+        self.value = ttl
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -37,8 +39,8 @@ class TTLTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        return bytes([self.type * 2, 2]) + self.value.to_bytes(2, 'big')
 
     def __len__(self):
         """Return the length of the TLV value.
@@ -46,16 +48,16 @@ class TTLTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        return 2
 
     def __repr__(self):
         """Return a printable representation of the TLV object.
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        return "TTL=" + str(self.value)
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):
@@ -66,5 +68,19 @@ class TTLTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+
+        if len(data) != 4:
+            raise ValueError()
+
+        type_shifted = data[0]
+        if type_shifted != TLV.Type.TTL * 2:
+            raise ValueError()
+
+        len_missing_msbit = data[1]
+        if len_missing_msbit != 2:
+            raise ValueError()
+
+
+        ttl = (data[2] << 8) + data[3]
+        return TTLTLV(ttl)
