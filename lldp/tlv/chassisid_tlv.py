@@ -161,7 +161,10 @@ class ChassisIdTLV(TLV):
 
         #all other cases:
         else:
-            return bytes([self.type * 2, len(self.value) + 1]) + bytes(self.value,'utf-8')
+            if len(self.value) > 255:
+                return bytes([(self.type * 2) + 1, len(self.value) - 256]) + bytes(self.value, 'utf-8')
+            else:
+                return bytes([self.type * 2, len(self.value) + 1]) + bytes(self.value,'utf-8')
 
 
     def __len__(self):
@@ -212,32 +215,36 @@ class ChassisIdTLV(TLV):
         if type_shifted != TLV.Type.CHASSIS_ID * 2:
             raise ValueError()
 
-        len_missing_msbit = data[1]
-        if len_missing_msbit < 2:
+        length = data[1]
+
+        if data[0] % 2 != 0:
+            length += 256
+
+        if length < 2:
             raise ValueError()
 
         # length does not match with expected length
-        if len_missing_msbit != len(data) - 2:
+        if length != len(data) - 2:
             raise ValueError()
 
         subtype = data[2]
 
         # Mac address case
         if subtype == 4:
-            if len_missing_msbit != 7:
+            if length != 7:
                 raise ValueError()
             return ChassisIdTLV(subtype, data[3:])
         # ip address case
         elif subtype == 5:
             if data[3] == 1:
-                if len_missing_msbit != 6:
+                if length != 6:
                     raise ValueError()
                 return ChassisIdTLV(subtype, IPv4Address(data[4:]))
                 # ipv4 case
                 return
             if data[3] == 2:
                 # ipv6 case
-                if len_missing_msbit != 18:
+                if length != 18:
                     raise ValueError()
                 return ChassisIdTLV(subtype, IPv6Address(data[4:]))
             else:
