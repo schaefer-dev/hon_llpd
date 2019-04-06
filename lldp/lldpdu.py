@@ -1,4 +1,6 @@
 from lldp.tlv import TLV
+from lldp.tlv import ChassisIdTLV, TTLTLV, EndOfLLDPDUTLV, ManagementAddressTLV, OrganizationallySpecificTLV
+from lldp.tlv import PortIdTLV, PortDescriptionTLV, SystemDescriptionTLV, SystemNameTLV, SystemCapabilitiesTLV
 
 
 class LLDPDU:
@@ -109,4 +111,46 @@ class LLDPDU:
         subclass.
         """
         # TODO: Implement
-        return NotImplemented
+        lldpu = LLDPDU()
+
+        current_byte = 0
+        next_current_byte = 0
+
+        while True:
+            type = data[current_byte] >> 1
+            if type > 8 and type != 127:
+                raise ValueError()
+
+            length = data[current_byte+1]
+            if data[current_byte] % 2 == 1:
+                length += 256
+            next_current_byte = current_byte + 2 + length
+            tlv = None
+            if type == TLV.Type.CHASSIS_ID:
+                tlv = ChassisIdTLV.from_bytes(data[current_byte:next_current_byte])
+            elif type == TLV.Type.PORT_ID:
+                tlv = PortIdTLV.from_bytes(data[current_byte:next_current_byte])
+            elif type == TLV.Type.TTL:
+                tlv = TTLTLV.from_bytes(data[current_byte:next_current_byte])
+            elif type == TLV.Type.END_OF_LLDPDU:
+                tlv = EndOfLLDPDUTLV.from_bytes(data[current_byte:next_current_byte])
+            if type == TLV.Type.MANAGEMENT_ADDRESS:
+                tlv = ManagementAddressTLV.from_bytes(data[current_byte:next_current_byte])
+            elif type == TLV.Type.ORGANIZATIONALLY_SPECIFIC:
+                tlv = OrganizationallySpecificTLV.from_bytes(data[current_byte:next_current_byte])
+            elif type == TLV.Type.PORT_ID:
+                tlv = PortIdTLV.from_bytes(data[current_byte:next_current_byte])
+            elif type == TLV.Type.SYSTEM_NAME:
+                tlv = SystemNameTLV.from_bytes(data[current_byte:next_current_byte])
+            if type == TLV.Type.SYSTEM_DESCRIPTION:
+                tlv = SystemDescriptionTLV.from_bytes(data[current_byte:next_current_byte])
+            elif type == TLV.Type.PORT_DESCRIPTION:
+                tlv = PortDescriptionTLV.from_bytes(data[current_byte:next_current_byte])
+            elif type == TLV.Type.SYSTEM_CAPABILITIES:
+                tlv = SystemCapabilitiesTLV.from_bytes(data[current_byte:next_current_byte])
+
+            lldpu.append(tlv)
+            current_byte = next_current_byte
+
+            if current_byte >= len(data):
+                return lldpu
