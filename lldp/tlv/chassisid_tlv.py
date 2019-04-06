@@ -111,10 +111,12 @@ class ChassisIdTLV(TLV):
                 Network Address -> ip_address
                 Otherwise       -> str
         """
-        # TODO: Implement
-        self.type = NotImplemented
-        self.subtype = NotImplemented
-        self.value = NotImplemented
+        # TODO: Implement Done
+
+        # TODO: check for validity of network address, mac adress here
+        self.type = TLV.Type.CHASSIS_ID
+        self.subtype = subtype
+        self.value = id
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -122,8 +124,23 @@ class ChassisIdTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement Done
+        # Mac address case
+        if self.subtype == 4:
+            return bytes([self.type * 2, 1 + 6, self.subtype]) + self.value
+        # ip address case
+        elif self.subtype == 5:
+            if self.value.version == 4:
+                # ipv4 case
+                return bytes([self.type * 2, 1 + 5, self.subtype ,1]) + self.value.packed
+            else:
+                # ipv6 case
+                return bytes([self.type * 2, 1 + 17, self.subtype, 2]) + self.value.packed
+
+        #all other cases:
+        else:
+            return bytes([self.type * 2, len(self.value) + 1]) + bytes(self.value,'utf-8')
+
 
     def __len__(self):
         """Return the length of the TLV value.
@@ -131,16 +148,30 @@ class ChassisIdTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        # Mac address case
+        if self.subtype == 4:
+            return 7
+        # ip address case
+        elif self.subtype == 5:
+            if self.value.version == 4:
+                # ipv4 case
+                return 6
+            else:
+                # ipv6 case
+                return 18
+
+        # all other cases:
+        else:
+            return len(self.value) + 1
 
     def __repr__(self):
         """Return a printable representation of the TLV object.
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        return "Chassis-ID subtype:" + str(self.subtype) + " with value: " + str(self.value)
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):
@@ -151,5 +182,14 @@ class ChassisIdTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: error cases have to implemented here
+        type_shifted = data[0]
+        if type_shifted != TLV.Type.CHASSIS_ID * 2:
+            raise ValueError()
+
+        len_missing_msbit = data[1]
+        if len_missing_msbit < 2:
+            raise ValueError()
+
+        ttl = (data[2] << 8) + data[3]
+        return TTLTLV(ttl)
