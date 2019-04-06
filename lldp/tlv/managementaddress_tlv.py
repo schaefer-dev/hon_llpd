@@ -128,18 +128,18 @@ class ManagementAddressTLV(TLV):
 
         if self.value.version == 4:
             if self.oid is None:
-                return bytes([self.type * 2, 8 + 4, 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big')
+                return bytes([self.type * 2, 8 + 4, 5, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big')
 
             else:
-                return bytes([self.type * 2, 8 + 4 + oid_length, 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big') + self.oid
+                return bytes([self.type * 2, 8 + 4 + oid_length, 5, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big') + self.oid
         else:
             if self.oid is None:
                 return bytes(
-                    [self.type * 2, 8 + 16 + len(self.oid), 16, 2]) + self.value.packed + self.subtype.to_bytes(1,
+                    [self.type * 2, 8 + 16 + len(self.oid), 17, 2]) + self.value.packed + self.subtype.to_bytes(1,
                                                                                                                 'big') + self.ifnumber.to_bytes(
                     4, 'big') + oid_length.to_bytes(1, 'big')
             else:
-                return bytes([self.type * 2, 8 + 16 + oid_length, 16, 2]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big') + self.oid
+                return bytes([self.type * 2, 8 + 16 + oid_length, 17, 2]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + oid_length.to_bytes(1, 'big') + self.oid
 
     def __len__(self):
         """Return the length of the TLV value.
