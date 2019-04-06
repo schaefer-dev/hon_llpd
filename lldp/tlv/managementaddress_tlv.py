@@ -105,6 +105,8 @@ class ManagementAddressTLV(TLV):
         # TODO: Implement
         self.type = TLV.Type.MANAGEMENT_ADDRESS
         self.subtype = ifsubtype
+        if ifsubtype > 3:
+            raise ValueError()
         self.value = address
         self.oid = oid
         self.ifnumber  = interface_number
@@ -117,9 +119,19 @@ class ManagementAddressTLV(TLV):
         """
         # TODO: Implement
         if self.value.version == 4:
-            return bytes([self.type * 2, 8 + 4 + len(self.oid), 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(4, 'big') + self.oid
+            if self.oid is None:
+                return bytes([self.type * 2, 8 + 4, 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(1, 'big') + self.oid
+
+            else:
+                return bytes([self.type * 2, 8 + 4 + len(self.oid), 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(1, 'big') + self.oid
         else:
-            return bytes([self.type * 2, 8 + 16 + len(self.oid), 16, 2]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(4, 'big') + self.oid
+            if self.oid is None:
+                return bytes(
+                    [self.type * 2, 8 + 16 + len(self.oid), 16, 2]) + self.value.packed + self.subtype.to_bytes(1,
+                                                                                                                'big') + self.ifnumber.to_bytes(
+                    4, 'big') + len(self.oid).to_bytes(1, 'big') + self.oid
+            else:
+                return bytes([self.type * 2, 8 + 16 + len(self.oid), 16, 2]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(1, 'big') + self.oid
 
     def __len__(self):
         """Return the length of the TLV value.
@@ -150,5 +162,55 @@ class ManagementAddressTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement
-        return NotImplemented
+
+        type = data[0] >> 1
+        length = data[1]
+
+        if type != TLV.Type.MANAGEMENT_ADDRESS:
+            raise ValueError()
+
+        if length < 9 or length > 167:
+            raise ValueError()
+
+        man_addr_len = data[2]
+
+        if man_addr_len > 31 or man_addr_len < 1:
+            raise ValueError()
+
+        man_addr_subtype = data[3]
+
+        addr_length = 0
+        if man_addr_subtype == 1:
+            addr_length = 4
+        else:
+            addr_length = 16
+
+        man_addr = data[4:(4+addr_length)]
+
+        if_subtype = data[4 + addr_length]
+
+        ifnumber = data[(5 + addr_length) : (9 + addr_length)]
+
+        oid_len = data[(9 + addr_length)]
+
+        oid = data[(10 + addr_length):]
+
+
+        #if oid_len != len(oid):
+            #raise ValueError()
+
+        if oid_len == 0:
+            oid = None
+
+
+        if man_addr_subtype == 1:
+            #ipv4 case
+            addr = IPv4Address(man_addr)
+            return ManagementAddressTLV(addr, ifnumber, if_subtype, oid)
+
+        else:
+            #ipv6 case
+            addr = IPv6Address(man_addr)
+            return ManagementAddressTLV(addr, ifnumber, if_subtype, oid)
+
+
