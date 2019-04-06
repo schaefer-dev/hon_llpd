@@ -103,10 +103,11 @@ class ManagementAddressTLV(TLV):
             oid (bytes): The OID. See above
         """
         # TODO: Implement
-        self.type = NotImplemented
-        self.subtype = NotImplemented
-        self.value = NotImplemented
-        self.oid = NotImplemented
+        self.type = TLV.Type.MANAGEMENT_ADDRESS
+        self.subtype = ifsubtype
+        self.value = address
+        self.oid = oid
+        self.ifnumber  = interface_number
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -115,7 +116,10 @@ class ManagementAddressTLV(TLV):
         See `TLV.__bytes__()` for more information.
         """
         # TODO: Implement
-        return NotImplemented
+        if self.value.version == 4:
+            return bytes([self.type * 2, 8 + 4 + len(self.oid), 4, 1]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(4, 'big') + self.oid
+        else:
+            return bytes([self.type * 2, 8 + 16 + len(self.oid), 16, 2]) + self.value.packed + self.subtype.to_bytes(1, 'big') + self.ifnumber.to_bytes(4, 'big') + len(self.oid).to_bytes(4, 'big') + self.oid
 
     def __len__(self):
         """Return the length of the TLV value.
@@ -123,16 +127,19 @@ class ManagementAddressTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        if self.value.version == 4:
+            return 8 + 4 + len(self.oid)
+        else:
+            return 8 + 16 + len(self.oid)
 
     def __repr__(self):
         """Return a printable representation of the TLV object.
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        return "ManagementTLV subtype:" + str(self.subtype) + " ip:" + str(self.value) + " oid:" + str(self.oid)
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):

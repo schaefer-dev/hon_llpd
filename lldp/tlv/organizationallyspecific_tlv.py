@@ -45,7 +45,9 @@ class OrganizationallySpecificTLV(TLV):
         self.type = TLV.Type.ORGANIZATIONALLY_SPECIFIC
         self.oui = oui
         self.subtype = subtype
-        self.value = bytes(value, 'utf-8')
+        self.value = None
+        if value is not None:
+            self.value = bytes(value, 'utf-8')
 
         if len(oui) != 3:
             raise ValueError
