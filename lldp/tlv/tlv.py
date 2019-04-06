@@ -76,8 +76,14 @@ class TLV(object):
         Params:
             data (bytes or bytearray): The packed TLV
         """
-        type_byte = data[0] >> 1
-        return NotImplemented
+        first_byte = data[0]
+
+        length = data[1]
+
+        if first_byte % 2 != 0:
+            length += 256
+
+        return length
 
     @staticmethod
     def from_bytes(data: ByteType) -> 'TLV':

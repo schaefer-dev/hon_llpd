@@ -4,6 +4,8 @@ from ipaddress import ip_address, IPv4Address, IPv6Address
 from lldp.tlv import TLV
 
 
+# TODO: implement support for most significant length byte that is contained the first data-byte. Currently this bit is still ignored in all methods
+
 class ChassisIdTLV(TLV):
     """Chassis ID TLV
 
@@ -118,6 +120,26 @@ class ChassisIdTLV(TLV):
         self.subtype = subtype
         self.value = id
 
+        # Mac address case
+        if self.subtype == 4:
+            if len(self.value) != 6:
+                raise ValueError()
+
+        # ip address case
+        elif self.subtype == 5:
+            if self.value.version == 4:
+                # ipv4 case
+                return
+            elif self.value.version == 6:
+                # ipv6 case
+                return
+            else:
+                raise ValueError()
+
+        # all other cases:
+        else:
+            return
+
     def __bytes__(self):
         """Return the byte representation of the TLV.
 
@@ -182,7 +204,10 @@ class ChassisIdTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: error cases have to implemented here
+        # TODO: more error cases have to implemented here, illegal ip etc
+        if len(data) < 3:
+            raise ValueError()
+
         type_shifted = data[0]
         if type_shifted != TLV.Type.CHASSIS_ID * 2:
             raise ValueError()
@@ -191,5 +216,38 @@ class ChassisIdTLV(TLV):
         if len_missing_msbit < 2:
             raise ValueError()
 
-        ttl = (data[2] << 8) + data[3]
-        return TTLTLV(ttl)
+        # length does not match with expected length
+        if len_missing_msbit != len(data) - 2:
+            raise ValueError()
+
+        subtype = data[2]
+
+        # Mac address case
+        if subtype == 4:
+            if len_missing_msbit != 7:
+                raise ValueError()
+            return ChassisIdTLV(subtype, data[3:])
+        # ip address case
+        elif subtype == 5:
+            if data[3] == 1:
+                if len_missing_msbit != 6:
+                    raise ValueError()
+                return ChassisIdTLV(subtype, IPv4Address(data[4:]))
+                # ipv4 case
+                return
+            if data[3] == 2:
+                # ipv6 case
+                if len_missing_msbit != 18:
+                    raise ValueError()
+                return ChassisIdTLV(subtype, IPv6Address(data[4:]))
+            else:
+                # Ip address with not prefix 1 or 2
+                raise ValueError()
+
+        # all other cases:
+        else:
+            return ChassisIdTLV(subtype, data[3:].decode("utf-8"))
+
+        # TODO: lots of work still here to get correct bytes/type into value field
+
+
