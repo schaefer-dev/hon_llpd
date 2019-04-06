@@ -87,9 +87,17 @@ class SystemCapabilitiesTLV(TLV):
             supported (int): Bitmap of supported capabilities
             enabled (int): Bitmap of enabled capabilities
         """
-        # TODO: Implement
-        self.type = NotImplemented
-        self.value = NotImplemented
+        # TODO: Implement DONE
+        self.type = TLV.Type.SYSTEM_CAPABILITIES
+        self.value = (supported << 16) + enabled
+
+        # check if anything is enabled that is not supported
+        i = 1
+        while i <= 1024:
+            if self.value & i > 0:
+                if (self.value >> 16) & i == 0:
+                    raise ValueError()
+            i *= 2
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -97,8 +105,8 @@ class SystemCapabilitiesTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        return bytes([self.type * 2, 4]) + self.value.to_bytes(4, 'big')
 
     def __len__(self):
         """Return the length of the TLV value.
@@ -106,8 +114,8 @@ class SystemCapabilitiesTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement
-        return NotImplemented
+        # TODO: Implement DONE
+        return 4
 
     def __repr__(self):
         """Return a printable representation of the TLV object.
@@ -115,7 +123,7 @@ class SystemCapabilitiesTLV(TLV):
         See `TLV.__repr__()` for more information.
         """
         # TODO: Implement
-        return NotImplemented
+        return "Supported Capabilities:" + str(self.value >> 16) + " Enabled Capabilities:" + str(self.value & 0xffff)
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):
@@ -127,15 +135,46 @@ class SystemCapabilitiesTLV(TLV):
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
         # TODO: Implement
-        return NotImplemented
+        type = data[0] >> 1
+        if type != TLV.Type.SYSTEM_CAPABILITIES:
+            raise ValueError()
+
+        length = data[1]
+        if data[0] % 2 != 0:
+            length += 256
+
+        if length != 4:
+            raise ValueError()
+
+        values = data[2:]
+
+        # check if anything is enabled that is not supported
+        i = 1
+        while i <= 1024:
+            if values & i > 0:
+                if (values >> 16) & i == 0:
+                    raise ValueError()
+            i *= 2
+
+
+        return SystemCapabilitiesTLV(values)
 
     def supports(self, capabilities: int):
         """Check if the system supports a given set of capabilities.
 
         Multiple capabilities should be ORed together.
         """
-        # TODO: Implement
-        raise NotImplemented
+        # TODO: Implement DONE
+        # check if anything is enabled that is not supported
+
+        i = 1
+        while i <= capabilities:
+            if capabilities & i > 0:
+                if (self.value >> 16) & i == 0:
+                    return False
+            i *= 2
+
+        return True
 
     def enabled(self, capabilities: int):
         """Check if the system has a given capability enabled.
@@ -143,4 +182,11 @@ class SystemCapabilitiesTLV(TLV):
         Multiple capabilities should be ORed together.
         """
         # TODO: Implement
-        raise NotImplemented
+        i = 1
+        while i <= capabilities:
+            if capabilities & i > 0:
+                if (self.value) & i == 0:
+                    return False
+            i *= 2
+
+        return True
