@@ -108,9 +108,29 @@ class PortIdTLV(TLV):
                 Otherwise       -> str
         """
         # TODO: Implement
-        self.type = NotImplemented
-        self.subtype = NotImplemented
-        self.value = NotImplemented
+        self.type = TLV.Type.PORT_ID
+        self.subtype = subtype
+        self.value = id
+
+        # Mac address case
+        if self.subtype == 3:
+            if len(self.value) != 6:
+                raise ValueError()
+
+        # ip address case
+        elif self.subtype == 4:
+            if self.value.version == 4:
+                # ipv4 case
+                return
+            elif self.value.version == 6:
+                # ipv6 case
+                return
+            else:
+                raise ValueError()
+
+        # all other cases:
+        else:
+            return
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -119,7 +139,24 @@ class PortIdTLV(TLV):
         See `TLV.__bytes__()` for more information.
         """
         # TODO: Implement
-        return NotImplemented
+        # Mac address case
+        if self.subtype == 3:
+            return bytes([self.type * 2, 1 + 6, self.subtype]) + self.value
+        # ip address case
+        elif self.subtype == 4:
+            if self.value.version == 4:
+                # ipv4 case
+                return bytes([self.type * 2, 1 + 5, self.subtype ,1]) + self.value.packed
+            else:
+                # ipv6 case
+                return bytes([self.type * 2, 1 + 17, self.subtype, 2]) + self.value.packed
+
+        #all other cases:
+        else:
+            if len(self.value) > 255:
+                return bytes([(self.type * 2) + 1, len(self.value) - 256]) + bytes(self.value, 'utf-8')
+            else:
+                return bytes([self.type * 2, len(self.value) + 1]) + bytes(self.value,'utf-8')
 
     def __len__(self):
         """Return the length of the TLV value.
@@ -128,7 +165,21 @@ class PortIdTLV(TLV):
         See `TLV.__len__()` for more information.
         """
         # TODO: Implement
-        return NotImplemented
+        # Mac address case
+        if self.subtype == 3:
+            return 7
+        # ip address case
+        elif self.subtype == 4:
+            if self.value.version == 4:
+                # ipv4 case
+                return 6
+            else:
+                # ipv6 case
+                return 18
+
+        # all other cases:
+        else:
+            return len(self.value) + 1
 
     def __repr__(self):
         """Return a printable representation of the TLV object.
@@ -136,7 +187,7 @@ class PortIdTLV(TLV):
         See `TLV.__repr__()` for more information.
         """
         # TODO: Implement
-        return NotImplemented
+        return "Port-ID subtype:" + str(self.subtype) + " with value: " + str(self.value)
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):
@@ -148,4 +199,50 @@ class PortIdTLV(TLV):
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
         # TODO: Implement
-        return NotImplemented
+        # TODO: more error cases have to implemented here, illegal ip etc
+        if len(data) < 3:
+            raise ValueError()
+
+        type_shifted = data[0]
+        if type_shifted != TLV.Type.PORT_ID * 2:
+            raise ValueError()
+
+        length = data[1]
+
+        if data[0] % 2 != 0:
+            length += 256
+
+        if length < 2:
+            raise ValueError()
+
+        # length does not match with expected length
+        if length != len(data) - 2:
+            raise ValueError()
+
+        subtype = data[2]
+
+        # Mac address case
+        if subtype == 3:
+            if length != 7:
+                raise ValueError()
+            return PortIdTLV(subtype, data[3:])
+        # ip address case
+        elif subtype == 4:
+            if data[3] == 1:
+                if length != 6:
+                    raise ValueError()
+                return PortIdTLV(subtype, IPv4Address(data[4:]))
+                # ipv4 case
+                return
+            if data[3] == 2:
+                # ipv6 case
+                if length != 18:
+                    raise ValueError()
+                return PortIdTLV(subtype, IPv6Address(data[4:]))
+            else:
+                # Ip address with not prefix 1 or 2
+                raise ValueError()
+
+        # all other cases:
+        else:
+            return PortIdTLV(subtype, data[3:].decode("utf-8"))

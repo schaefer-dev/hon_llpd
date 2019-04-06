@@ -254,7 +254,3 @@ class ChassisIdTLV(TLV):
         # all other cases:
         else:
             return ChassisIdTLV(subtype, data[3:].decode("utf-8"))
-
-        # TODO: lots of work still here to get correct bytes/type into value field
-
-
