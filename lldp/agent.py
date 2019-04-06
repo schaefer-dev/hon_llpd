@@ -37,7 +37,7 @@ class LLDPAgent:
         """
         if sock is None:
             # Open a socket suitable for transmitting LLDP frames.
-            # TODO: Implement
+            # TODO: Implement DONE
             self.socket = socket.socket(17, socket.SOCK_RAW, socket.htons(0x0003))
             self.socket.bind((interface_name, 0x0003))
         else:
@@ -113,11 +113,14 @@ class LLDPAgent:
 
         # Construct LLDPDU
         # TODO: Implement
-        lldpdu = NotImplemented
+        mac_tlv = ChassisIdTLV(subtype=ChassisIdTLV.Subtype.MAC_ADDRESS, id=self.mac_address)
+        interface_tlv = PortIdTLV(PortIdTLV.Subtype.INTERFACE_NAME, id=self.interface_name)
+        ttl_tlv = TTLTLV(60)
+        lldpdu = LLDPDU([mac_tlv, interface_tlv, ttl_tlv])
 
         # Construct Ethernet Frame
         # TODO: Implement
-        frame = NotImplemented
+        frame = self.mac_address + self.mac_address + "\x88\xCC" + bytes(lldpdu)
 
         # Send frame
         self.socket.send(frame)

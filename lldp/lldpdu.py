@@ -110,7 +110,7 @@ class LLDPDU:
         Raises a value error if the provided TLV is of unknown type. Apart from that validity checks are left to the
         subclass.
         """
-        # TODO: Implement
+        # TODO: Implement DONE
         lldpu = LLDPDU()
 
         current_byte = 0
