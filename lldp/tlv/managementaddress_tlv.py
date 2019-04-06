@@ -135,7 +135,7 @@ class ManagementAddressTLV(TLV):
         else:
             if self.oid is None:
                 return bytes(
-                    [self.type * 2, 8 + 16 + len(self.oid), 17, 2]) + self.value.packed + self.subtype.to_bytes(1,
+                    [self.type * 2, 8 + 16, 17, 2]) + self.value.packed + self.subtype.to_bytes(1,
                                                                                                                 'big') + self.ifnumber.to_bytes(
                     4, 'big') + oid_length.to_bytes(1, 'big')
             else:

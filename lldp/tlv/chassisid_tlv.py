@@ -162,9 +162,9 @@ class ChassisIdTLV(TLV):
         #all other cases:
         else:
             if len(self.value) > 255:
-                return bytes([(self.type * 2) + 1, len(self.value) - 256], self.subtype) + bytes(self.value, 'utf-8')
+                return bytes([(self.type * 2) + 1, len(self.value) - 256]) + self.subtype.to_bytes(1, 'big') + self.value.encode('utf-8')
             else:
-                return bytes([self.type * 2, len(self.value) + 1], self.subtype) + bytes(self.value,'utf-8')
+                return bytes([self.type * 2, len(self.value) + 1]) + self.subtype.to_bytes(1, 'big') + self.value.encode('utf-8')
 
 
     def __len__(self):

@@ -47,11 +47,11 @@ class OrganizationallySpecificTLV(TLV):
         self.subtype = subtype
         self.value = None
         if value is not None:
-            self.value = bytes(value, 'utf-8')
+            self.value = bytes(str(value), 'utf-8')
 
         if len(oui) != 3:
             raise ValueError
-        if len(value) > 507:
+        if len(self.value) > 507:
             raise ValueError
 
     def __bytes__(self):

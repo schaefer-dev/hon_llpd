@@ -60,7 +60,7 @@ class LLDPDU:
         """
 
 
-        # TODO: Implement error checks
+        # TODO: BIG IMPORTANT: Implement error checks that are explained in the TLVs class description
         if len(self.__tlvs) == 0:
             if tlv.type != TLV.Type.CHASSIS_ID:
                 raise ValueError()
@@ -81,6 +81,8 @@ class LLDPDU:
             raise ValueError()
         else:
             self.__tlvs.append(tlv)
+            if len(self.__bytes__()) > 1500:
+                raise ValueError()
 
 
 
@@ -89,8 +91,12 @@ class LLDPDU:
 
         An LLDPDU is complete when it includes at least the mandatory TLVs (Chassis ID, Port ID, TTL).
         """
-        # TODO: Implement
-        return NotImplemented
+        if len(self.__tlvs) < 3:
+            return False
+        if self.__tlvs[0].type == TLV.Type.CHASSIS_ID and self.__tlvs[1].type == TLV.Type.PORT_ID and self.__tlvs[2].type == TLV.Type.TTL:
+            return True
+        else:
+            return False
 
     @staticmethod
     def from_bytes(data: bytes):
