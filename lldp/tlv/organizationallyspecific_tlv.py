@@ -49,8 +49,6 @@ class OrganizationallySpecificTLV(TLV):
 
         if len(oui) != 3:
             raise ValueError
-        if len(subtype) != 1:
-            raise ValueError
         if len(value) > 507:
             raise ValueError
 
@@ -103,9 +101,9 @@ class OrganizationallySpecificTLV(TLV):
         if length < 4 or length > 511:
             raise ValueError
 
-        oui = data[2] + data[3] + data[4]
+        oui = ((data[2] << 16) + (data[3] << 8) + data[4]).to_bytes(3, 'big')
 
-        subtype = data[5]
+        subtype = data[5].to_bytes(1, 'big')
 
         value = None
 
