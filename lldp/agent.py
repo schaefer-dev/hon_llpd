@@ -101,6 +101,8 @@ class LLDPAgent:
                         # Log contents
                         self.logger.log(str(lldpdu))
                         received = True
+                    else:
+                        continue
 
                 # Announce if the time is right
                 t_now = time.time()
