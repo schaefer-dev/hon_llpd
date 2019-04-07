@@ -77,16 +77,30 @@ class LLDPAgent:
                     # Get the next frame
                     data = r[0].recv(4096)
 
-                    # Check format and extract LLDPDU (raw bytes)
-                    # TODO: Implement
-
                     # Instantiate LLDPDU object from raw bytes
                     # TODO: Implement
-                    lldpdu = NotImplemented
 
-                    # Log contents
-                    self.logger.log(str(lldpdu))
-                    received = True
+                    # Check format and extract LLDPDU (raw bytes)
+                    is_lldp = True
+
+                    # check destination address
+                    if data[0] != b'\x01' or data[1] != b'\x80' or data[2] != b'\xc2' or data[3] != b'\x00' or data[4] != b'\x00':
+                        is_lldp = False
+                    if not (data[5] == b'\x0e' or data[5] == b'\x03' or data[5] == b'\x00'):
+                        is_lldp = False
+                    if data[12] != b'\x88' or data[13] != b'\xcc':
+                        is_lldp = False
+
+                    # check source address
+                    dst_mac = (data[6] << 40) + (data[7] << 32) + (data[8] << 24) + (data[9] << 16) + (data[10] << 8) + data[11]
+
+                    if is_lldp and (dst_mac != self.mac_address):
+
+                        lldpdu = LLDPDU.from_bytes(data[14:])
+
+                        # Log contents
+                        self.logger.log(str(lldpdu))
+                        received = True
 
                 # Announce if the time is right
                 t_now = time.time()
