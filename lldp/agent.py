@@ -99,7 +99,8 @@ class LLDPAgent:
                         lldpdu = LLDPDU.from_bytes(data[14:])
 
                         # Log contents
-                        self.logger.log(str(dst_mac) + " " + str(lldpdu))
+                        self.logger.log("dst_mac:" + str(dst_mac) + " my mac:" + str(self.mac_address))
+                        self.logger.log(str(lldpdu))
                         received = True
                     else:
                         continue
