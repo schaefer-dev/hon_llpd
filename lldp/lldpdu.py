@@ -105,7 +105,9 @@ class LLDPDU:
         """
         if len(self.__tlvs) < 3:
             return False
+        # check if contains mandatory first 3 TLVs
         if self.__tlvs[0].type == TLV.Type.CHASSIS_ID and self.__tlvs[1].type == TLV.Type.PORT_ID and self.__tlvs[2].type == TLV.Type.TTL:
+            # check if TLV ends with END_OF_LLDPDU
             if self.__tlvs[len(self.__tlvs) - 1].type == TLV.Type.END_OF_LLDPDU:
                 return True
             else:
