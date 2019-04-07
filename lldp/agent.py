@@ -84,18 +84,18 @@ class LLDPAgent:
                     is_lldp = True
 
                     # check destination address
-                    if (data[0] != b'\x01' or data[1] != b'\x80' or data[2] != b'\xc2' or data[3] != b'\x00' or data[4] != b'\x00'):
+                    if (data[0] != 1 or data[1] != 128 or data[2] != 194 or data[3] != 0 or data[4] != 0):
                         is_lldp = False
-                    if not (data[5] == b'\x0e' or data[5] == b'\x03' or data[5] == b'\x00'):
+                    if not (data[5] == 15 or data[5] == 3 or data[5] == 0):
                         is_lldp = False
-                    if data[12] != b'\x88' or data[13] != b'\xcc':
+                    if data[12] != 136 or data[13] != 204:
                         is_lldp = False
 
                     # check source address
                     dst_mac = (data[6] << 40) + (data[7] << 32) + (data[8] << 24) + (data[9] << 16) + (data[10] << 8) + data[11]
                     dst_mac = dst_mac.to_bytes(6, 'big')
 
-                    if (dst_mac != self.mac_address):
+                    if is_lldp and (dst_mac != self.mac_address):
 
                         lldpdu = LLDPDU.from_bytes(data[14:])
 
