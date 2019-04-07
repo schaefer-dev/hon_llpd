@@ -63,23 +63,30 @@ class LLDPDU:
 
 
         # TODO: BIG IMPORTANT: Implement error checks that are explained in the TLVs class description
-        #if len(self.__tlvs) == 0:
-        #    if tlv.type != TLV.Type.CHASSIS_ID:
-        #        raise ValueError()
-        #    else:
-        #        self.__tlvs.append(tlv)
-        #elif len(self.__tlvs) == 1:
-        #    if tlv.type != TLV.Type.PORT_ID:
-        #        raise ValueError()
-        #    else:
-        #        self.__tlvs.append(tlv)
-        #elif len(self.__tlvs) == 2:
-        #    if tlv.type != TLV.Type.TTL:
-        #        raise ValueError()
-        #    else:
-        #        self.__tlvs.append(tlv)
-        # case for last element is already end of lldpu
-        #else:
+        # Chassis_ID has to be conained and the first one!
+        if len(self.__tlvs) == 0:
+            if tlv.type != TLV.Type.CHASSIS_ID:
+                raise ValueError()
+            else:
+                self.__tlvs.append(tlv)
+                return
+        else:
+            if len(self.__tlvs) == 1:
+                if tlv.type != TLV.Type.PORT_ID:
+                    raise ValueError()
+                else:
+                    self.__tlvs.append(tlv)
+                    return
+            elif len(self.__tlvs) == 2:
+                if tlv.type != TLV.Type.TTL:
+                    raise ValueError()
+                else:
+                    self.__tlvs.append(tlv)
+                    return
+            else:
+                # forth and following TLVs can not be chassis ID, portid or ttl
+                if tlv.type == TLV.Type.CHASSIS_ID or tlv.type == TLV.Type.TTL or tlv.type == TLV.Type.PORT_ID:
+                    raise ValueError()
 
 
         if len(self.__tlvs) != 0 and self.__tlvs[len(self.__tlvs)-1].type == TLV.Type.END_OF_LLDPDU:
