@@ -123,7 +123,7 @@ class LLDPAgent:
 
         # Construct Ethernet Frame
         # TODO: Implement
-        frame = self.mac_address + self.mac_address + "\x88\xCC" + bytes(lldpdu)
+        frame = self.mac_address + self.mac_address + b'\x88\xCC' + bytes(lldpdu)
 
         # Send frame
         self.socket.send(frame)
