@@ -57,7 +57,7 @@ class TTLTLV(TLV):
         See `TLV.__repr__()` for more information.
         """
         # TODO: Implement DONE
-        return "TTL=" + str(self.value)
+        return "TTLTLV=" + repr(self.value) + ")"
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):

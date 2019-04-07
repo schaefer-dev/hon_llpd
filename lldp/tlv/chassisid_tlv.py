@@ -196,7 +196,7 @@ class ChassisIdTLV(TLV):
         See `TLV.__repr__()` for more information.
         """
         # TODO: Implement DONE
-        return "Chassis-ID subtype:" + str(self.subtype) + " with value: " + str(self.value)
+        return "ChassisIdTLV(" + repr(self.subtype) + ", " + repr(self.value) + ")"
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):
