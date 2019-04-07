@@ -123,7 +123,7 @@ class SystemCapabilitiesTLV(TLV):
         See `TLV.__repr__()` for more information.
         """
         # TODO: Implement
-        return "Supported Capabilities:" + str(self.value >> 16) + " Enabled Capabilities:" + str(self.value & 0xffff)
+        return "SystemCapabilitiesTLV(" + repr(self.value >> 16) + ", " + repr(self.value & 0xffff) + ")"
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):

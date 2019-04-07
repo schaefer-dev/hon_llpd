@@ -55,7 +55,7 @@ class PortDescriptionTLV(TLV):
         See `TLV.__repr__()` for more information.
         """
         # TODO: Implement DONE
-        return "SystemDescriptionTLV:" + str(self.value)
+        return "PortDescriptionTLV(" + repr(self.value) + ")"
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):
@@ -135,7 +135,7 @@ class SystemDescriptionTLV(TLV):
         See `TLV.__repr__()` for more information.
         """
         # TODO: Implement DONE
-        return "SystemDescriptionTLV:" + str(self.value)
+        return "SystemDescriptionTLV(" + repr(self.value) + ")"
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):
@@ -215,7 +215,7 @@ class SystemNameTLV(TLV):
         See `TLV.__repr__()` for more information.
         """
         # TODO: Implement DONE
-        return "SystemNameTLV:" + str(self.value)
+        return "SystemNameTLV(" + repr(self.value) + ")"
 
     @staticmethod
     def from_bytes(data: TLV.ByteType):
