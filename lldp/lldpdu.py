@@ -63,23 +63,26 @@ class LLDPDU:
 
 
         # TODO: BIG IMPORTANT: Implement error checks that are explained in the TLVs class description
-        if len(self.__tlvs) == 0:
-            if tlv.type != TLV.Type.CHASSIS_ID:
-                raise ValueError()
-            else:
-                self.__tlvs.append(tlv)
-        elif len(self.__tlvs) == 1:
-            if tlv.type != TLV.Type.PORT_ID:
-                raise ValueError()
-            else:
-                self.__tlvs.append(tlv)
-        elif len(self.__tlvs) == 2:
-            if tlv.type != TLV.Type.TTL:
-                raise ValueError()
-            else:
-                self.__tlvs.append(tlv)
+        #if len(self.__tlvs) == 0:
+        #    if tlv.type != TLV.Type.CHASSIS_ID:
+        #        raise ValueError()
+        #    else:
+        #        self.__tlvs.append(tlv)
+        #elif len(self.__tlvs) == 1:
+        #    if tlv.type != TLV.Type.PORT_ID:
+        #        raise ValueError()
+        #    else:
+        #        self.__tlvs.append(tlv)
+        #elif len(self.__tlvs) == 2:
+        #    if tlv.type != TLV.Type.TTL:
+        #        raise ValueError()
+        #    else:
+        #        self.__tlvs.append(tlv)
         # case for last element is already end of lldpu
-        elif self.__tlvs[len(self.__tlvs)-1].type == TLV.Type.END_OF_LLDPDU:
+        #else:
+
+
+        if len(self.__tlvs) != 0 and self.__tlvs[len(self.__tlvs)-1].type == TLV.Type.END_OF_LLDPDU:
             raise ValueError()
         else:
             self.__tlvs.append(tlv)
