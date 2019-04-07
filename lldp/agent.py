@@ -94,13 +94,13 @@ class LLDPAgent:
                     # check source address
                     dst_mac = (data[6] << 40) + (data[7] << 32) + (data[8] << 24) + (data[9] << 16) + (data[10] << 8) + data[11]
 
-                    #if is_lldp and (dst_mac != self.mac_address):
+                    if is_lldp and (dst_mac != self.mac_address):
 
-                    lldpdu = LLDPDU.from_bytes(data[14:])
+                        lldpdu = LLDPDU.from_bytes(data[14:])
 
-                    # Log contents
-                    self.logger.log(str(lldpdu))
-                    received = True
+                        # Log contents
+                        self.logger.log(str(lldpdu))
+                        received = True
 
                 # Announce if the time is right
                 t_now = time.time()
