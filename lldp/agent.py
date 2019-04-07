@@ -86,7 +86,7 @@ class LLDPAgent:
                     # check destination address
                     if (data[0] != 1 or data[1] != 128 or data[2] != 194 or data[3] != 0 or data[4] != 0):
                         is_lldp = False
-                    if not (data[5] == 15 or data[5] == 3 or data[5] == 0):
+                    if not (data[5] == 14 or data[5] == 3 or data[5] == 0):
                         is_lldp = False
                     if data[12] != 136 or data[13] != 204:
                         is_lldp = False
@@ -100,7 +100,7 @@ class LLDPAgent:
                         lldpdu = LLDPDU.from_bytes(data[14:])
 
                         # Log contents
-                        self.logger.log("dst_mac:" + str(dst_mac) + " my mac:" + str(self.mac_address))
+                        #self.logger.log("dst_mac:" + str(dst_mac) + " my mac:" + str(self.mac_address))
                         self.logger.log(str(lldpdu))
                         received = True
                     else:
