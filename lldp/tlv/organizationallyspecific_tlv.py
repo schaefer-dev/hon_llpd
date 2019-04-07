@@ -41,7 +41,6 @@ class OrganizationallySpecificTLV(TLV):
             subtype (bytes or bytearray): The organizationally defined subtype
             value (any): The value
         """
-        # TODO: Implement
         self.type = TLV.Type.ORGANIZATIONALLY_SPECIFIC
         self.oui = oui
         self.subtype = subtype
@@ -60,7 +59,6 @@ class OrganizationallySpecificTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement DONE
         return bytes([self.type * 2, 4 + len(self.value)]) + self.oui + self.subtype + self.value
 
     def __len__(self):
@@ -77,7 +75,6 @@ class OrganizationallySpecificTLV(TLV):
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement DONE
         return "OrganizationallySpecificTLV(" + repr(self.oui) + ", " + repr(self.subtype) + ", " + repr(self.value) + ")"
 
     @staticmethod
@@ -89,7 +86,6 @@ class OrganizationallySpecificTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement
         type = data[0] >> 1
 
         if type != TLV.Type.ORGANIZATIONALLY_SPECIFIC:

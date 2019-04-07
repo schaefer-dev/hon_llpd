@@ -37,7 +37,6 @@ class LLDPAgent:
         """
         if sock is None:
             # Open a socket suitable for transmitting LLDP frames.
-            # TODO: Implement DONE
             self.socket = socket.socket(17, socket.SOCK_RAW, socket.htons(0x0003))
             self.socket.bind((interface_name, 0x0003))
         else:
@@ -77,14 +76,11 @@ class LLDPAgent:
                     # Get the next frame
                     data = r[0].recv(4096)
 
-                    # Instantiate LLDPDU object from raw bytes
-                    # TODO: Implement
-
                     # Check format and extract LLDPDU (raw bytes)
                     is_lldp = True
 
                     # check destination address
-                    if (data[0] != 1 or data[1] != 128 or data[2] != 194 or data[3] != 0 or data[4] != 0):
+                    if data[0] != 1 or data[1] != 128 or data[2] != 194 or data[3] != 0 or data[4] != 0:
                         is_lldp = False
                     if not (data[5] == 14 or data[5] == 3 or data[5] == 0):
                         is_lldp = False
@@ -97,10 +93,10 @@ class LLDPAgent:
 
                     if is_lldp and (dst_mac != self.mac_address):
 
+                        # Instantiate LLDPDU object from raw bytes
                         lldpdu = LLDPDU.from_bytes(data[14:])
 
                         # Log contents
-                        #self.logger.log("dst_mac:" + str(dst_mac) + " my mac:" + str(self.mac_address))
                         self.logger.log(str(lldpdu))
                         received = True
                     else:

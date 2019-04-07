@@ -138,6 +138,8 @@ class ChassisIdTLV(TLV):
 
         # all other cases:
         else:
+            if len(self.value) > 255 or len(self.value) == 0:
+                raise ValueError
             return
 
     def __bytes__(self):
@@ -146,7 +148,6 @@ class ChassisIdTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement Done
         # Mac address case
         if self.subtype == 4:
             return bytes([self.type * 2, 1 + 6, self.subtype]) + self.value
@@ -173,7 +174,6 @@ class ChassisIdTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement DONE
         # Mac address case
         if self.subtype == 4:
             return 7
@@ -207,7 +207,6 @@ class ChassisIdTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: more error cases have to implemented here, illegal ip etc
         if len(data) < 3:
             raise ValueError()
 

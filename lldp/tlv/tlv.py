@@ -87,6 +87,7 @@ class TLV(object):
 
     @staticmethod
     def from_bytes(data: ByteType) -> 'TLV':
+        # UNUSED because implemented in every seperate TLV
         """Create a TLV instance from raw bytes.
 
         Args:
@@ -117,6 +118,7 @@ class TLV(object):
         }[tlv_type].from_bytes(data)
 
     def __init__(self, type: Type, value_bytes: ByteType, subtype: int = None):
+        # UNUSED because implemented in every seperate TLV
         """Constructor
 
         Args:
@@ -130,6 +132,7 @@ class TLV(object):
         self.value = None
 
     def __bytes__(self) -> bytes:
+        # UNUSED because implemented in every seperate TLV
         """Return the byte representation of the TLV.
 
         Consider the following TLV:
@@ -150,6 +153,7 @@ class TLV(object):
         return NotImplemented
 
     def __len__(self) -> int:
+        # UNUSED because implemented in every seperate TLV
         """Return the length of the TLV value.
 
         Returns the length of the TLV value in bytes, i.e. the value encoded in the length field of the TLV.
@@ -162,6 +166,7 @@ class TLV(object):
         return NotImplemented
 
     def __repr__(self) -> str:
+        # UNUSED because implemented in every seperate TLV
         """
         Using inheritance can save you a lot of work when implementing the __bytes__ and __len__ methods in the subclasses.
 

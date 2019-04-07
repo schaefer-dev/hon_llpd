@@ -27,9 +27,9 @@ class TTLTLV(TLV):
     """
 
     def __init__(self, ttl: int):
-        # TODO: Implement DONE
-        if ttl > 65535 or ttl <= 0:
+        if ttl <= 0 or ttl > 65535:
             raise ValueError()
+
         self.type = TLV.Type.TTL
         self.value = ttl
 
@@ -39,7 +39,6 @@ class TTLTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement DONE
         return bytes([self.type * 2, 2]) + self.value.to_bytes(2, 'big')
 
     def __len__(self):
@@ -48,7 +47,6 @@ class TTLTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement DONE
         return 2
 
     def __repr__(self):
@@ -56,7 +54,6 @@ class TTLTLV(TLV):
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement DONE
         return "TTLTLV(" + repr(self.value) + ")"
 
     @staticmethod
@@ -68,7 +65,6 @@ class TTLTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement DONE
 
         if len(data) != 4:
             raise ValueError()

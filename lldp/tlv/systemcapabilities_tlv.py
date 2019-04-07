@@ -87,7 +87,6 @@ class SystemCapabilitiesTLV(TLV):
             supported (int): Bitmap of supported capabilities
             enabled (int): Bitmap of enabled capabilities
         """
-        # TODO: Implement DONE
         self.type = TLV.Type.SYSTEM_CAPABILITIES
         self.value = (supported << 16) + enabled
 
@@ -105,7 +104,6 @@ class SystemCapabilitiesTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement DONE
         return bytes([self.type * 2, 4]) + self.value.to_bytes(4, 'big')
 
     def __len__(self):
@@ -114,7 +112,6 @@ class SystemCapabilitiesTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement DONE
         return 4
 
     def __repr__(self):
@@ -122,7 +119,6 @@ class SystemCapabilitiesTLV(TLV):
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement
         return "SystemCapabilitiesTLV(" + repr(self.value >> 16) + ", " + repr(self.value & 0xffff) + ")"
 
     @staticmethod
@@ -134,7 +130,6 @@ class SystemCapabilitiesTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement
         type = data[0] >> 1
         if type != TLV.Type.SYSTEM_CAPABILITIES:
             raise ValueError()
@@ -152,7 +147,7 @@ class SystemCapabilitiesTLV(TLV):
         supported = (data[2] << 8) + (data[3])
         enabled = (data[4] << 8) + data[5]
 
-        # TODO: check if anything is enabled that is not supported
+        # check if anything is enabled that is not supported
         i = 1
         while i <= 1024:
             if (enabled & i) > 0:
@@ -168,9 +163,6 @@ class SystemCapabilitiesTLV(TLV):
 
         Multiple capabilities should be ORed together.
         """
-        # TODO: Implement DONE
-        # check if anything is enabled that is not supported
-
         i = 1
         while i <= capabilities:
             if capabilities & i > 0:
@@ -185,7 +177,6 @@ class SystemCapabilitiesTLV(TLV):
 
         Multiple capabilities should be ORed together.
         """
-        # TODO: Implement
         i = 1
         while i <= capabilities:
             if capabilities & i > 0:

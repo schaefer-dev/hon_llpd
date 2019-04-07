@@ -61,8 +61,6 @@ class LLDPDU:
         `ValueError`. Conditions for specific TLVs are detailed in each TLV's class description.
         """
 
-
-        # TODO: BIG IMPORTANT: Implement error checks that are explained in the TLVs class description
         # Chassis_ID has to be conained and the first one!
         if len(self.__tlvs) == 0:
             if tlv.type != TLV.Type.CHASSIS_ID:
@@ -71,12 +69,14 @@ class LLDPDU:
                 self.__tlvs.append(tlv)
                 return
         else:
+            # Port_ID has to be conained and the second one!
             if len(self.__tlvs) == 1:
                 if tlv.type != TLV.Type.PORT_ID:
                     raise ValueError()
                 else:
                     self.__tlvs.append(tlv)
                     return
+            # TTL has to be conained and the third one!
             elif len(self.__tlvs) == 2:
                 if tlv.type != TLV.Type.TTL:
                     raise ValueError()
@@ -88,7 +88,7 @@ class LLDPDU:
                 if tlv.type == TLV.Type.CHASSIS_ID or tlv.type == TLV.Type.TTL or tlv.type == TLV.Type.PORT_ID:
                     raise ValueError()
 
-
+        # No TLVs after END_OF_LLDPU
         if len(self.__tlvs) != 0 and self.__tlvs[len(self.__tlvs)-1].type == TLV.Type.END_OF_LLDPDU:
             raise ValueError()
         else:
@@ -120,7 +120,6 @@ class LLDPDU:
         Raises a value error if the provided TLV is of unknown type. Apart from that validity checks are left to the
         subclass.
         """
-        # TODO: Implement DONE
         lldpu = LLDPDU()
 
         current_byte = 0
@@ -136,6 +135,7 @@ class LLDPDU:
                 length += 256
             next_current_byte = current_byte + 2 + length
             tlv = None
+            # call TLV constructor depending on the TLV-type
             if type == TLV.Type.CHASSIS_ID:
                 tlv = ChassisIdTLV.from_bytes(data[current_byte:next_current_byte])
             elif type == TLV.Type.PORT_ID:

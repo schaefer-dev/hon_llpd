@@ -107,7 +107,6 @@ class PortIdTLV(TLV):
                 Network Address -> ip_address
                 Otherwise       -> str
         """
-        # TODO: Implement
         self.type = TLV.Type.PORT_ID
         self.subtype = subtype
         self.value = id
@@ -130,6 +129,8 @@ class PortIdTLV(TLV):
 
         # all other cases:
         else:
+            if len(self.value) > 255:
+                raise ValueError()
             return
 
     def __bytes__(self):
@@ -138,7 +139,6 @@ class PortIdTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement
         # Mac address case
         if self.subtype == 3:
             return bytes([self.type * 2, 1 + 6, self.subtype]) + self.value
@@ -164,7 +164,6 @@ class PortIdTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement
         # Mac address case
         if self.subtype == 3:
             return 7
@@ -186,7 +185,6 @@ class PortIdTLV(TLV):
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement
         return "PortIdTLV(" + repr(self.subtype) + ", " + repr(self.value) + ")"
 
     @staticmethod
@@ -198,7 +196,6 @@ class PortIdTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement
         # TODO: more error cases have to implemented here, illegal ip etc
         if len(data) < 3:
             raise ValueError()
@@ -245,4 +242,6 @@ class PortIdTLV(TLV):
 
         # all other cases:
         else:
+            if len(data[3:]) > 255:
+                raise ValueError()
             return PortIdTLV(subtype, data[3:].decode("utf-8"))

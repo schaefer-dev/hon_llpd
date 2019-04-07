@@ -102,7 +102,6 @@ class ManagementAddressTLV(TLV):
             ifsubtype (IFNumberingSubtype): The interface numbering subtype
             oid (bytes): The OID. See above
         """
-        # TODO: Implement
         self.type = TLV.Type.MANAGEMENT_ADDRESS
         self.subtype = ifsubtype
         if ifsubtype > 3:
@@ -113,6 +112,9 @@ class ManagementAddressTLV(TLV):
             self.value = address
         self.oid = oid
         self.ifnumber  = interface_number
+        if oid is not None:
+            if len(oid) > 128:
+                raise ValueError()
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -120,7 +122,6 @@ class ManagementAddressTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement
 
         oid_length = 0
         if self.oid is not None:
@@ -147,7 +148,6 @@ class ManagementAddressTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement DONE
         if self.value.version == 4:
             return 8 + 4 + len(self.oid)
         else:
@@ -158,7 +158,6 @@ class ManagementAddressTLV(TLV):
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement DONE
         return "ManagementAddressTLV(" + repr(self.address) +  ", " + repr(self.ifnumber) + ", " + repr(self.subtype) + ", " + repr(self.oid) + ")"
 
 
@@ -203,10 +202,6 @@ class ManagementAddressTLV(TLV):
         oid_len = data[(9 + addr_length)]
 
         oid = data[(10 + addr_length):]
-
-
-        #if oid_len != len(oid):
-            #raise ValueError()
 
         if oid_len == 0:
             oid = None

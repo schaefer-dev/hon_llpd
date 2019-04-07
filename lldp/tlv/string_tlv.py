@@ -27,9 +27,11 @@ class PortDescriptionTLV(TLV):
     """
 
     def __init__(self, description: str):
-        # TODO: Implement DONE
         self.type = TLV.Type.PORT_DESCRIPTION
         self.value = description
+
+        if len(description) > 255:
+            raise ValueError()
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -37,7 +39,6 @@ class PortDescriptionTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement
         return bytes([self.type * 2, len(self.value)]) + bytes(self.value, 'utf-8')
 
     def __len__(self):
@@ -46,7 +47,6 @@ class PortDescriptionTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement DONE
         return len(self.value)
 
     def __repr__(self):
@@ -54,7 +54,6 @@ class PortDescriptionTLV(TLV):
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement DONE
         return "PortDescriptionTLV(" + repr(self.value) + ")"
 
     @staticmethod
@@ -66,7 +65,6 @@ class PortDescriptionTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement DONE
         type = data[0] >> 1
         if type != TLV.Type.PORT_DESCRIPTION:
             raise ValueError()
@@ -74,6 +72,9 @@ class PortDescriptionTLV(TLV):
         length = data[1]
         if data[0] % 2 != 0:
             length += 256
+
+        if length > 255:
+            raise ValueError()
 
         if length != len(data[2:]):
             raise ValueError()
@@ -107,9 +108,10 @@ class SystemDescriptionTLV(TLV):
     """
 
     def __init__(self, description: str):
-        # TODO: Implement DONE
         self.type = TLV.Type.SYSTEM_DESCRIPTION
         self.value = description
+        if len(description) > 255:
+            raise ValueError()
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -117,7 +119,6 @@ class SystemDescriptionTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement DONE
         return bytes([self.type * 2, len(self.value)]) + bytes(self.value, 'utf-8')
 
     def __len__(self):
@@ -126,7 +127,6 @@ class SystemDescriptionTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement DONE
         return len(self.value)
 
     def __repr__(self):
@@ -134,7 +134,6 @@ class SystemDescriptionTLV(TLV):
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement DONE
         return "SystemDescriptionTLV(" + repr(self.value) + ")"
 
     @staticmethod
@@ -146,7 +145,6 @@ class SystemDescriptionTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement DONE
         type = data[0] >> 1
         if type != TLV.Type.SYSTEM_DESCRIPTION:
             raise ValueError()
@@ -154,6 +152,9 @@ class SystemDescriptionTLV(TLV):
         length = data[1]
         if data[0] % 2 != 0:
             length += 256
+
+        if length > 255:
+            raise ValueError()
 
         if length != len(data[2:]):
             raise ValueError()
@@ -187,9 +188,11 @@ class SystemNameTLV(TLV):
     """
 
     def __init__(self, name: str):
-        # TODO: Implement DONE
         self.type = TLV.Type.SYSTEM_NAME
         self.value = name
+
+        if len(name) > 255:
+            raise ValueError()
 
     def __bytes__(self):
         """Return the byte representation of the TLV.
@@ -197,7 +200,6 @@ class SystemNameTLV(TLV):
         This method must return bytes. Returning a bytearray will raise a TypeError.
         See `TLV.__bytes__()` for more information.
         """
-        # TODO: Implement DONE
         return bytes([self.type * 2, len(self.value)]) + bytes(self.value, 'utf-8')
 
     def __len__(self):
@@ -206,7 +208,6 @@ class SystemNameTLV(TLV):
         This method must return an int. Returning anything else will raise a TypeError.
         See `TLV.__len__()` for more information.
         """
-        # TODO: Implement DONE
         return len(self.value)
 
     def __repr__(self):
@@ -214,7 +215,6 @@ class SystemNameTLV(TLV):
 
         See `TLV.__repr__()` for more information.
         """
-        # TODO: Implement DONE
         return "SystemNameTLV(" + repr(self.value) + ")"
 
     @staticmethod
@@ -226,7 +226,6 @@ class SystemNameTLV(TLV):
 
         Raises a `ValueError` if the provided TLV contains errors (e.g. has the wrong type).
         """
-        # TODO: Implement Done
 
         type = data[0] >> 1
         if type != TLV.Type.SYSTEM_NAME:
@@ -235,6 +234,9 @@ class SystemNameTLV(TLV):
         length = data[1]
         if data[0] % 2 != 0:
             length += 256
+
+        if length > 255:
+            raise ValueError()
 
         if length != len(data[2:]):
             raise ValueError()
