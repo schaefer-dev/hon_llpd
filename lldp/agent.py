@@ -116,7 +116,10 @@ class LLDPAgent:
         mac_tlv = ChassisIdTLV(subtype=ChassisIdTLV.Subtype.MAC_ADDRESS, id=self.mac_address)
         interface_tlv = PortIdTLV(PortIdTLV.Subtype.INTERFACE_NAME, id=self.interface_name)
         ttl_tlv = TTLTLV(60)
-        lldpdu = LLDPDU([mac_tlv, interface_tlv, ttl_tlv])
+        lldpdu = LLDPDU()
+        lldpdu.append(mac_tlv)
+        lldpdu.append(interface_tlv)
+        lldpdu.append(ttl_tlv)
 
         # Construct Ethernet Frame
         # TODO: Implement
