@@ -93,6 +93,7 @@ class LLDPAgent:
 
                     # check source address
                     dst_mac = (data[6] << 40) + (data[7] << 32) + (data[8] << 24) + (data[9] << 16) + (data[10] << 8) + data[11]
+                    dst_mac = dst_mac.to_bytes(6, 'big')
 
                     if (dst_mac != self.mac_address):
 
