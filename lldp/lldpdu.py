@@ -106,7 +106,10 @@ class LLDPDU:
         if len(self.__tlvs) < 3:
             return False
         if self.__tlvs[0].type == TLV.Type.CHASSIS_ID and self.__tlvs[1].type == TLV.Type.PORT_ID and self.__tlvs[2].type == TLV.Type.TTL:
-            return True
+            if self.__tlvs[len(self.__tlvs) - 1].type == TLV.Type.END_OF_LLDPDU:
+                return True
+            else:
+                return False
         else:
             return False
 
